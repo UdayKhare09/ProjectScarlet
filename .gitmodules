@@ -1,15 +1,15 @@
 [submodule "scarlet-auth"]
 	path = scarlet-auth
-	url = https://github.com/UdayKhare09/scarlet-auth.git
+	url = ../scarlet-auth.git
 [submodule "scarlet-user"]
 	path = scarlet-user
-	url = https://github.com/UdayKhare09/scarlet-user.git
+	url = ../scarlet-user.git
 [submodule "scarlet-gateway"]
 	path = scarlet-gateway
-	url = https://github.com/UdayKhare09/scarlet-gateway.git
+	url = ../scarlet-gateway.git
 [submodule "scarlet-react"]
 	path = scarlet-react
-	url = https://github.com/UdayKhare09/scarlet-react.git
+	url = ../scarlet-react.git
 [submodule "scarlet-android"]
 	path = scarlet-android
-	url = https://github.com/UdayKhare09/scarlet-android.git
+	url = ../scarlet-android.git
