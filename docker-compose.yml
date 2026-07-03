@@ -1,0 +1,189 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: scarlet-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: scarlet-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  scarlet-auth:
+    build:
+      context: ./scarlet-auth
+      dockerfile: Dockerfile
+    container_name: scarlet-auth
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/scarlet_auth
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres_password
+      JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      USER_SERVICE_URL: http://scarlet-user
+      SPRING_DATA_REDIS_CLUSTER_NODES: redis-node-1:6379,redis-node-2:6379,redis-node-3:6379,redis-node-4:6379,redis-node-5:6379,redis-node-6:6379
+      SMTP_USERNAME: ${SMTP_USERNAME:-your_email@gmail.com}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-your_app_password}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-your_google_client_id}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-your_google_client_secret}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  scarlet-user:
+    build:
+      context: ./scarlet-user
+      dockerfile: Dockerfile
+    container_name: scarlet-user
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/scarlet_user
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres_password
+      JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadminpassword
+      MINIO_BUCKET_NAME: profile-pictures
+      AUTH_SERVICE_URL: http://scarlet-auth
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  scarlet-gateway:
+    build:
+      context: ./scarlet-gateway
+      dockerfile: Dockerfile
+    container_name: scarlet-gateway
+    ports:
+      - "80:80"
+    environment:
+      AUTH_SERVICE_URL: http://scarlet-auth
+      USER_SERVICE_URL: http://scarlet-user
+      REACT_SERVICE_URL: http://scarlet-react
+      JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+    depends_on:
+      - scarlet-auth
+      - scarlet-user
+
+  scarlet-react:
+    build:
+      context: ./scarlet-react
+      dockerfile: Dockerfile
+    container_name: scarlet-react
+    depends_on:
+      - scarlet-gateway
+
+  redis-node-1:
+    image: redis:alpine
+    container_name: scarlet-redis-node-1
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "7001:6379"
+
+  redis-node-2:
+    image: redis:alpine
+    container_name: scarlet-redis-node-2
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "7002:6379"
+
+  redis-node-3:
+    image: redis:alpine
+    container_name: scarlet-redis-node-3
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "7003:6379"
+
+  redis-node-4:
+    image: redis:alpine
+    container_name: scarlet-redis-node-4
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "7004:6379"
+
+  redis-node-5:
+    image: redis:alpine
+    container_name: scarlet-redis-node-5
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "7005:6379"
+
+  redis-node-6:
+    image: redis:alpine
+    container_name: scarlet-redis-node-6
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "7006:6379"
+
+  redis-cluster-init:
+    image: redis:alpine
+    container_name: scarlet-redis-cluster-init
+    depends_on:
+      - redis-node-1
+      - redis-node-2
+      - redis-node-3
+      - redis-node-4
+      - redis-node-5
+      - redis-node-6
+    command: >
+      sh -c "
+      sleep 5 &&
+      redis-cli --cluster create 
+      redis-node-1:6379 
+      redis-node-2:6379 
+      redis-node-3:6379 
+      redis-node-4:6379 
+      redis-node-5:6379 
+      redis-node-6:6379 
+      --cluster-replicas 1 --cluster-yes
+      "
+
+  minio:
+    image: minio/minio:latest
+    container_name: scarlet-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadminpassword
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: scarlet-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+      mc alias set myminio http://minio:9000 minioadmin minioadminpassword &&
+      mc mb --ignore-existing myminio/profile-pictures &&
+      mc anonymous set public myminio/profile-pictures
+      "
+
+volumes:
+  pgdata:
