@@ -5,16 +5,16 @@
   "id": null,
   "panels": [
     {
-      "datasource": { "type": "pyroscope", "uid": "pyroscope" },
+      "datasource": { "type": "grafana-pyroscope-datasource", "uid": "pyroscope" },
       "gridPos": { "h": 20, "w": 24, "x": 0, "y": 0 },
       "id": 1,
       "options": {},
       "targets": [
         {
-          "datasource": { "type": "pyroscope", "uid": "pyroscope" },
-          "labelSelector": "{service_name=~\"$service\"}",
-          "profileTypeId": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
-          "query": "process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name=~\"$service\"}",
+          "datasource": { "type": "grafana-pyroscope-datasource", "uid": "pyroscope" },
+          "labelSelector": "{}",
+          "profileTypeId": "$service.cpu",
+          "query": "$service.cpu",
           "refId": "A"
         }
       ],
@@ -22,16 +22,16 @@
       "type": "flamegraph"
     },
     {
-      "datasource": { "type": "pyroscope", "uid": "pyroscope" },
+      "datasource": { "type": "grafana-pyroscope-datasource", "uid": "pyroscope" },
       "gridPos": { "h": 20, "w": 24, "x": 0, "y": 20 },
       "id": 2,
       "options": {},
       "targets": [
         {
-          "datasource": { "type": "pyroscope", "uid": "pyroscope" },
-          "labelSelector": "{service_name=~\"$service\"}",
-          "profileTypeId": "memory:alloc_objects:count:space:bytes",
-          "query": "memory:alloc_objects:count:space:bytes{service_name=~\"$service\"}",
+          "datasource": { "type": "grafana-pyroscope-datasource", "uid": "pyroscope" },
+          "labelSelector": "{}",
+          "profileTypeId": "$service.alloc_in_new_tlab_bytes",
+          "query": "$service.alloc_in_new_tlab_bytes",
           "refId": "A"
         }
       ],
