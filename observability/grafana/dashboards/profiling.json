@@ -13,7 +13,7 @@
         {
           "datasource": { "type": "grafana-pyroscope-datasource", "uid": "pyroscope" },
           "labelSelector": "{service_name=\"$service\"}",
-          "profileTypeId": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
+          "profileTypeId": "$service:cpu:nanoseconds:cpu:nanoseconds",
           "refId": "A"
         }
       ],
@@ -29,7 +29,7 @@
         {
           "datasource": { "type": "grafana-pyroscope-datasource", "uid": "pyroscope" },
           "labelSelector": "{service_name=\"$service\"}",
-          "profileTypeId": "memory:alloc_objects:count:space:bytes",
+          "profileTypeId": "$service:alloc_in_new_tlab_bytes:bytes:space:bytes",
           "refId": "A"
         }
       ],
