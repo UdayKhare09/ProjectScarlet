@@ -5,26 +5,40 @@
   "id": null,
   "panels": [
     {
-      "datasource": { "type": "grafana-pyroscope-app", "uid": "pyroscope" },
+      "datasource": { "type": "pyroscope", "uid": "pyroscope" },
       "gridPos": { "h": 20, "w": 24, "x": 0, "y": 0 },
       "id": 1,
       "options": {
         "profileTypeId": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
-        "labelSelector": "{service_name=~\"$service\"}",
-        "spanSelector": []
+        "labelSelector": "{service_name=~\"$service\"}"
       },
+      "targets": [
+        {
+          "datasource": { "type": "pyroscope", "uid": "pyroscope" },
+          "labelSelector": "{service_name=~\"$service\"}",
+          "profileTypeId": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
+          "refId": "A"
+        }
+      ],
       "title": "CPU Flame Graph — $service",
       "type": "flamegraph"
     },
     {
-      "datasource": { "type": "grafana-pyroscope-app", "uid": "pyroscope" },
+      "datasource": { "type": "pyroscope", "uid": "pyroscope" },
       "gridPos": { "h": 20, "w": 24, "x": 0, "y": 20 },
       "id": 2,
       "options": {
         "profileTypeId": "memory:alloc_objects:count:space:bytes",
-        "labelSelector": "{service_name=~\"$service\"}",
-        "spanSelector": []
+        "labelSelector": "{service_name=~\"$service\"}"
       },
+      "targets": [
+        {
+          "datasource": { "type": "pyroscope", "uid": "pyroscope" },
+          "labelSelector": "{service_name=~\"$service\"}",
+          "profileTypeId": "memory:alloc_objects:count:space:bytes",
+          "refId": "A"
+        }
+      ],
       "title": "Memory Allocation Flame Graph — $service",
       "type": "flamegraph"
     }
@@ -36,7 +50,7 @@
     "list": [
       {
         "current": { "selected": false, "text": "scarlet-auth", "value": "scarlet-auth" },
-        "datasource": { "type": "grafana-pyroscope-app", "uid": "pyroscope" },
+        "datasource": { "type": "pyroscope", "uid": "pyroscope" },
         "definition": "label_values(process_cpu:cpu:nanoseconds:cpu:nanoseconds{}, service_name)",
         "hide": 0,
         "includeAll": false,

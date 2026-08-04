@@ -5,13 +5,14 @@
   "id": null,
   "panels": [
     {
-      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "datasource": { "type": "loki", "uid": "loki" },
       "fieldConfig": { "defaults": { "unit": "reqps", "color": { "mode": "palette-classic" } } },
       "gridPos": { "h": 6, "w": 24, "x": 0, "y": 0 },
       "id": 1,
       "targets": [
         {
-          "expr": "sum(rate({service=~\"$service\"} |= \"\" [2m])) by (service, level)",
+          "datasource": { "type": "loki", "uid": "loki" },
+          "expr": "sum by (service, level) (rate({service=~\"$service\"}[2m]))",
           "legendFormat": "{{service}} [{{level}}]",
           "refId": "A"
         }
