@@ -11,6 +11,13 @@
       "options": {
         "maxNodes": 100
       },
+      "targets": [
+        {
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "queryType": "serviceMap",
+          "refId": "A"
+        }
+      ],
       "title": "Service Map",
       "type": "nodeGraph"
     },

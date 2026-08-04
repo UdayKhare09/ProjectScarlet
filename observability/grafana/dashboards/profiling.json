@@ -8,15 +8,13 @@
       "datasource": { "type": "pyroscope", "uid": "pyroscope" },
       "gridPos": { "h": 20, "w": 24, "x": 0, "y": 0 },
       "id": 1,
-      "options": {
-        "profileTypeId": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
-        "labelSelector": "{service_name=~\"$service\"}"
-      },
+      "options": {},
       "targets": [
         {
           "datasource": { "type": "pyroscope", "uid": "pyroscope" },
           "labelSelector": "{service_name=~\"$service\"}",
           "profileTypeId": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
+          "query": "process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name=~\"$service\"}",
           "refId": "A"
         }
       ],
@@ -27,15 +25,13 @@
       "datasource": { "type": "pyroscope", "uid": "pyroscope" },
       "gridPos": { "h": 20, "w": 24, "x": 0, "y": 20 },
       "id": 2,
-      "options": {
-        "profileTypeId": "memory:alloc_objects:count:space:bytes",
-        "labelSelector": "{service_name=~\"$service\"}"
-      },
+      "options": {},
       "targets": [
         {
           "datasource": { "type": "pyroscope", "uid": "pyroscope" },
           "labelSelector": "{service_name=~\"$service\"}",
           "profileTypeId": "memory:alloc_objects:count:space:bytes",
+          "query": "memory:alloc_objects:count:space:bytes{service_name=~\"$service\"}",
           "refId": "A"
         }
       ],
@@ -49,16 +45,18 @@
   "templating": {
     "list": [
       {
-        "current": { "selected": false, "text": "scarlet-auth", "value": "scarlet-auth" },
-        "datasource": { "type": "pyroscope", "uid": "pyroscope" },
-        "definition": "label_values(process_cpu:cpu:nanoseconds:cpu:nanoseconds{}, service_name)",
+        "current": { "selected": true, "text": "scarlet-auth", "value": "scarlet-auth" },
         "hide": 0,
         "includeAll": false,
         "multi": false,
         "name": "service",
-        "query": "label_values(process_cpu:cpu:nanoseconds:cpu:nanoseconds{}, service_name)",
-        "refresh": 2,
-        "type": "query",
+        "options": [
+          { "selected": true, "text": "scarlet-auth", "value": "scarlet-auth" },
+          { "selected": false, "text": "scarlet-user", "value": "scarlet-user" },
+          { "selected": false, "text": "scarlet-gateway", "value": "scarlet-gateway" }
+        ],
+        "query": "scarlet-auth,scarlet-user,scarlet-gateway",
+        "type": "custom",
         "label": "Service"
       }
     ]
