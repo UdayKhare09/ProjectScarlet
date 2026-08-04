@@ -16,6 +16,8 @@ This document outlines the core architecture and development guidelines for Proj
 - **Synchronous Communication**: Use **gRPC** for efficient, typed, sync inter-service calls.
 - **Asynchronous Communication**: Use **RabbitMQ** for event-driven message exchange.
 - **Distributed Transactions**: Use the **Choreography SAGA Pattern** over RabbitMQ for transactional workflows across microservices.
+- **API Gateway**: Use **Spring Cloud Gateway** for API Gateway.
+- **Kafka** only use when multiple different microservices need to consume the same event. Otherwise use RabbitMQ.
 
 ## 3. Tech Stack Standards
 - **Backend**: Spring Boot 3.5.x, Java 17+, Spring Cloud Gateway.
