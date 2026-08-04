@@ -1,0 +1,111 @@
+services:
+
+  # ─── OpenTelemetry Collector ──────────────────────────────────────────────────
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.121.0
+    container_name: scarlet-otel-collector
+    volumes:
+      - ./observability/otel-collector/otel-collector-config.yml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    restart: unless-stopped
+
+  # ─── Prometheus ───────────────────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: scarlet-prometheus
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --web.enable-lifecycle
+      - --web.enable-remote-write-receiver
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+  # ─── Loki ─────────────────────────────────────────────────────────────────────
+  loki:
+    image: grafana/loki:3.5.0
+    container_name: scarlet-loki
+    volumes:
+      - ./observability/loki/loki-config.yml:/etc/loki/local-config.yaml
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
+
+  # ─── Tempo ────────────────────────────────────────────────────────────────────
+  tempo:
+    image: grafana/tempo:2.7.0
+    container_name: scarlet-tempo
+    volumes:
+      - ./observability/tempo/tempo-config.yml:/etc/tempo/tempo-config.yml
+      - tempo-data:/var/tempo
+    command: -config.file=/etc/tempo/tempo-config.yml
+    ports:
+      - "3200:3200"   # Tempo HTTP query
+      - "9411:9411"   # Zipkin (optional compat)
+    restart: unless-stopped
+
+  # ─── Pyroscope ────────────────────────────────────────────────────────────────
+  pyroscope:
+    image: grafana/pyroscope:1.12.0
+    container_name: scarlet-pyroscope
+    volumes:
+      - pyroscope-data:/data
+    ports:
+      - "4040:4040"
+    restart: unless-stopped
+
+  # ─── PostgreSQL Exporter ──────────────────────────────────────────────────────
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.16.0
+    container_name: scarlet-postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:postgres_password@postgres:5432/postgres?sslmode=disable"
+    ports:
+      - "9187:9187"
+    restart: unless-stopped
+
+  # ─── Redis Exporter ───────────────────────────────────────────────────────────
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.67.0
+    container_name: scarlet-redis-exporter
+    environment:
+      REDIS_ADDR: "redis://redis-node-1:6379"
+      REDIS_EXPORTER_IS_CLUSTER: "true"
+    ports:
+      - "9121:9121"
+    restart: unless-stopped
+
+  # ─── Grafana ──────────────────────────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:11.6.0
+    container_name: scarlet-grafana
+    volumes:
+      - ./observability/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana-data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-scarlet_grafana_2024}
+      GF_SERVER_DOMAIN: obs.uday.bfhl.teamzemo.tech
+      GF_SERVER_ROOT_URL: https://obs.uday.bfhl.teamzemo.tech
+      GF_SERVER_SERVE_FROM_SUB_PATH: "false"
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+volumes:
+  prometheus-data:
+  loki-data:
+  tempo-data:
+  pyroscope-data:
+  grafana-data:

@@ -20,6 +20,11 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    # Enable built-in Prometheus plugin — exposes metrics on :15692/metrics
+    command: >-
+      sh -c "rabbitmq-plugins enable rabbitmq_prometheus && rabbitmq-server"
+    ports:
+      - "15692:15692"   # Prometheus metrics (internal only — not exposed externally)
     healthcheck:
       test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
       interval: 5s
@@ -47,6 +52,11 @@ services:
       WEBAUTHN_RP_ID: ${WEBAUTHN_RP_ID:-localhost}
       WEBAUTHN_RP_ORIGIN: ${WEBAUTHN_RP_ORIGIN:-http://localhost}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      # Observability
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: scarlet-auth
+      PYROSCOPE_SERVER_ADDRESS: http://pyroscope:4040
+      PYROSCOPE_APPLICATION_NAME: scarlet-auth
     depends_on:
       postgres:
         condition: service_healthy
@@ -66,6 +76,11 @@ services:
       MINIO_SECRET_KEY: minioadminpassword
       MINIO_BUCKET_NAME: profile-pictures
       AUTH_SERVICE_URL: http://scarlet-auth
+      # Observability
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: scarlet-user
+      PYROSCOPE_SERVER_ADDRESS: http://pyroscope:4040
+      PYROSCOPE_APPLICATION_NAME: scarlet-user
     depends_on:
       postgres:
         condition: service_healthy
@@ -84,6 +99,11 @@ services:
       USER_SERVICE_URL: http://scarlet-user
       REACT_SERVICE_URL: http://scarlet-react
       JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      # Observability
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: scarlet-gateway
+      PYROSCOPE_SERVER_ADDRESS: http://pyroscope:4040
+      PYROSCOPE_APPLICATION_NAME: scarlet-gateway
     depends_on:
       - scarlet-auth
       - scarlet-user

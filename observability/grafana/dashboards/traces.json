@@ -1,0 +1,77 @@
+{
+  "description": "ProjectScarlet — Distributed traces via Tempo with service map and log correlation",
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "panels": [
+    {
+      "datasource": { "type": "tempo", "uid": "tempo" },
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "maxNodes": 100
+      },
+      "title": "Service Map",
+      "type": "nodeGraph"
+    },
+    {
+      "datasource": { "type": "tempo", "uid": "tempo" },
+      "gridPos": { "h": 14, "w": 24, "x": 0, "y": 12 },
+      "id": 2,
+      "options": {
+        "dedupStrategy": "none",
+        "showTime": true
+      },
+      "targets": [
+        {
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "filters": [],
+          "limit": 20,
+          "queryType": "traceqlSearch",
+          "refId": "A",
+          "tableType": "spans"
+        }
+      ],
+      "title": "Trace Explorer",
+      "type": "table"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps" } },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 26 },
+      "id": 3,
+      "targets": [
+        {
+          "expr": "sum(rate(traces_spanmetrics_calls_total[2m])) by (service_name)",
+          "legendFormat": "{{service_name}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Span Rate by Service (from Tempo metrics generator)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s" } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 26 },
+      "id": 4,
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(traces_spanmetrics_latency_bucket[2m])) by (le, service_name))",
+          "legendFormat": "p99 {{service_name}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Trace p99 Latency by Service",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["scarlet", "traces", "tempo"],
+  "time": { "from": "now-1h", "to": "now" },
+  "timezone": "browser",
+  "title": "Scarlet — Distributed Traces",
+  "uid": "scarlet-traces",
+  "version": 1
+}

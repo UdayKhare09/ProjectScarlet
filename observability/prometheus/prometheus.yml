@@ -1,0 +1,72 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: scarlet
+    environment: production
+
+scrape_configs:
+
+  # ─── Spring Boot Services ────────────────────────────────────────────────────
+  - job_name: scarlet-auth
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['scarlet-auth:80']
+        labels:
+          service: scarlet-auth
+          team: teamzemo
+
+  - job_name: scarlet-user
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['scarlet-user:80']
+        labels:
+          service: scarlet-user
+          team: teamzemo
+
+  - job_name: scarlet-gateway
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['scarlet-gateway:80']
+        labels:
+          service: scarlet-gateway
+          team: teamzemo
+
+  # ─── PostgreSQL ──────────────────────────────────────────────────────────────
+  - job_name: postgres-exporter
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: postgres
+          team: teamzemo
+
+  # ─── Redis Cluster ───────────────────────────────────────────────────────────
+  - job_name: redis-exporter
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: redis-cluster
+          team: teamzemo
+
+  # ─── RabbitMQ ────────────────────────────────────────────────────────────────
+  - job_name: rabbitmq
+    static_configs:
+      - targets: ['rabbitmq:15692']
+        labels:
+          service: rabbitmq
+          team: teamzemo
+
+  # ─── MinIO ───────────────────────────────────────────────────────────────────
+  - job_name: minio
+    metrics_path: /minio/v2/metrics/cluster
+    scheme: http
+    static_configs:
+      - targets: ['minio:9000']
+        labels:
+          service: minio
+          team: teamzemo
+
+  # ─── Prometheus self-scrape ───────────────────────────────────────────────────
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']

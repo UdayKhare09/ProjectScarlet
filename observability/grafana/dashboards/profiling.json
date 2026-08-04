@@ -1,0 +1,57 @@
+{
+  "description": "ProjectScarlet — Continuous profiling flame graphs via Pyroscope",
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "panels": [
+    {
+      "datasource": { "type": "grafana-pyroscope-app", "uid": "pyroscope" },
+      "gridPos": { "h": 20, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "profileTypeId": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
+        "labelSelector": "{service_name=~\"$service\"}",
+        "spanSelector": []
+      },
+      "title": "CPU Flame Graph — $service",
+      "type": "flamegraph"
+    },
+    {
+      "datasource": { "type": "grafana-pyroscope-app", "uid": "pyroscope" },
+      "gridPos": { "h": 20, "w": 24, "x": 0, "y": 20 },
+      "id": 2,
+      "options": {
+        "profileTypeId": "memory:alloc_objects:count:space:bytes",
+        "labelSelector": "{service_name=~\"$service\"}",
+        "spanSelector": []
+      },
+      "title": "Memory Allocation Flame Graph — $service",
+      "type": "flamegraph"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 39,
+  "tags": ["scarlet", "profiling", "pyroscope"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": false, "text": "scarlet-auth", "value": "scarlet-auth" },
+        "datasource": { "type": "grafana-pyroscope-app", "uid": "pyroscope" },
+        "definition": "label_values(process_cpu:cpu:nanoseconds:cpu:nanoseconds{}, service_name)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "service",
+        "query": "label_values(process_cpu:cpu:nanoseconds:cpu:nanoseconds{}, service_name)",
+        "refresh": 2,
+        "type": "query",
+        "label": "Service"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timezone": "browser",
+  "title": "Scarlet — Continuous Profiling",
+  "uid": "scarlet-profiling",
+  "version": 1
+}
