@@ -93,7 +93,7 @@ services:
       dockerfile: Dockerfile
     container_name: scarlet-gateway
     ports:
-      - "80:80"
+      - "8080:80"
     environment:
       AUTH_SERVICE_URL: http://scarlet-auth
       USER_SERVICE_URL: http://scarlet-user
