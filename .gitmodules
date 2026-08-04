@@ -1,12 +1,15 @@
 [submodule "scarlet-auth"]
 	path = scarlet-auth
 	url = ../scarlet-auth.git
+	branch = master
 [submodule "scarlet-user"]
 	path = scarlet-user
 	url = ../scarlet-user.git
+	branch = master
 [submodule "scarlet-gateway"]
 	path = scarlet-gateway
 	url = ../scarlet-gateway.git
+	branch = master
 [submodule "scarlet-react"]
 	path = scarlet-react
 	url = ../scarlet-react.git
