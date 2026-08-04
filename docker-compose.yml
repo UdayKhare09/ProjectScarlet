@@ -57,6 +57,9 @@ services:
       OTEL_SERVICE_NAME: scarlet-auth
       PYROSCOPE_SERVER_ADDRESS: http://pyroscope:4040
       PYROSCOPE_APPLICATION_NAME: scarlet-auth
+      PYROSCOPE_FORMAT: jfr
+      PYROSCOPE_PROFILER_EVENT: cpu
+      PYROSCOPE_PROFILER_ALLOC: 512k
     depends_on:
       postgres:
         condition: service_healthy
@@ -81,6 +84,9 @@ services:
       OTEL_SERVICE_NAME: scarlet-user
       PYROSCOPE_SERVER_ADDRESS: http://pyroscope:4040
       PYROSCOPE_APPLICATION_NAME: scarlet-user
+      PYROSCOPE_FORMAT: jfr
+      PYROSCOPE_PROFILER_EVENT: cpu
+      PYROSCOPE_PROFILER_ALLOC: 512k
     depends_on:
       postgres:
         condition: service_healthy
@@ -104,6 +110,9 @@ services:
       OTEL_SERVICE_NAME: scarlet-gateway
       PYROSCOPE_SERVER_ADDRESS: http://pyroscope:4040
       PYROSCOPE_APPLICATION_NAME: scarlet-gateway
+      PYROSCOPE_FORMAT: jfr
+      PYROSCOPE_PROFILER_EVENT: cpu
+      PYROSCOPE_PROFILER_ALLOC: 512k
     depends_on:
       - scarlet-auth
       - scarlet-user
